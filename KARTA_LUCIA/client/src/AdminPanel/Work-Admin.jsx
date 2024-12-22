@@ -20,6 +20,11 @@ const Loader = () => (
 
 
 const FilePreviewList = ({ files, onDelete }) => {
+   if(files.length <= 0  || typeof files === 'string') {
+     return <div>
+
+     </div>
+   }
   return (
       <div className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md p-4 mb-4 w-[40vw] min-h-[40px]">
         <div className="grid grid-cols-2 gap-4">
