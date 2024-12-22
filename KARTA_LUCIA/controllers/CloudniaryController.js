@@ -7,6 +7,7 @@ cloudinary.config({
 });
 
 const uploadImageCloud = (req, res, next) => {
+  console.log("hello")
   if (!req.files || !req.files.photo || req.files.photo.length === 0) {
     return res.status(400).send("No files were uploaded.");
   }
