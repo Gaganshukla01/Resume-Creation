@@ -10,6 +10,20 @@ const WorkList = () => {
   const [portfolios, setPortfolios] = useState([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
 
+
+  function parseImages(imageUrl) {
+    let url = imageUrl;
+    try {
+      const imageArray = JSON.parse(imageUrl);
+      if (Array.isArray(imageArray) && imageArray.length > 0) {
+        url = imageArray[0];
+      }
+    } catch (e) {
+        // imageUrl is not a stringified array, use it as is
+    }
+    return url;
+  }
+
   useEffect(() => {
     if (!isDataFetched) {
       fetchPortfolios();
@@ -78,7 +92,7 @@ const WorkList = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{index+1}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{portfolio.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap"> 
-                    <img src={portfolio.imageUrl} alt="Portfolio Image" style={{ width: '50px', height: '50px' }} />
+                    <img src={parseImages(portfolio.imageUrl)} alt="Portfolio Image" style={{ width: '50px', height: '50px' }} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link to={`/Work?id=${portfolio._id}`}>
