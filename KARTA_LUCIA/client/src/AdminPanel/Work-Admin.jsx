@@ -204,9 +204,9 @@ const WorkAdmin = () => {
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      if (!title.trim()  ) {
-        setError("Title is  required");
+      if (!title.trim() ) {
         alert("Required fields are missing");
+        setIsLoading(false)
         return;
       }
       // Validate files before processing
@@ -251,7 +251,9 @@ const WorkAdmin = () => {
             );
 
             if (!response.ok) {
-              throw new Error('Upload failed', );
+              alert('Upload failed', );
+              setIsLoading(false);
+              return;
             }
 
             const responseData = await response.json();
@@ -264,9 +266,12 @@ const WorkAdmin = () => {
           uploadedUrls = results.filter(url => url !== null);
 
           console.log('Upload successful:', uploadedUrls);
+          setIsLoading(false);
         } catch (error) {
+          alert('Upload Failed', error.message)
+          setIsLoading(false);
           console.error('Upload failed:', error);
-          throw error;
+          return
         }
       }
 
@@ -310,7 +315,9 @@ const WorkAdmin = () => {
 
     } catch (error) {
       console.error("Error:", error);
-      alert("Error uploading files or saving portfolio");
+      alert("Error in saving portfolio" , error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
