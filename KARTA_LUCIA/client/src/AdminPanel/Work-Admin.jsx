@@ -168,6 +168,39 @@ const WorkAdmin = () => {
     setUploadedFiles(prev => prev.filter((_, index) => index !== indexToDelete));
   };
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  const MAX_FILES = 12;
+
+  const validateFiles = (files, existingFiles = []) => {
+    // Check for total number of files
+    const totalFiles = files.length + existingFiles.length;
+    if (totalFiles > MAX_FILES) {
+      alert(`Cannot upload more than ${MAX_FILES} images. Currently selected: ${totalFiles}`);
+      return false;
+    }
+
+    // Check each new file
+    for (const file of files) {
+      // Skip if it's a string (existing URL)
+      if (typeof file === 'string') continue;
+
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`File "${file.name}" exceeds 10MB size limit`);
+        return false;
+      }
+
+      // Check if it's an image
+      if (!file.type.startsWith('image/')) {
+        alert(`File "${file.name}" is not an image`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
@@ -176,47 +209,64 @@ const WorkAdmin = () => {
         alert("Required fields are missing");
         return;
       }
+      // Validate files before processing
+      if (!validateFiles(uploadedFiles)) {
+        setIsLoading(false);
+        return;
+      }
 
       // Upload files first
+      // Handle file uploads to Cloudinary
       let uploadedUrls = [];
-      const filesFromCloudinary = []
+      const filesFromCloudinary = [];
+
       if (uploadedFiles.length > 0) {
         try {
-          const formData = new FormData();
-
-          // Append each file with the field name 'photo'
-          console.log(uploadedFiles)
-
-          uploadedFiles.forEach(file => {
+          // Process each file for upload
+          const uploadPromises = uploadedFiles.map(async (file) => {
+            // If the file is already a URL (previously uploaded), keep it
             if (typeof file === 'string') {
-              filesFromCloudinary.push(file)
-              return
+              filesFromCloudinary.push(file);
+              return null;
             }
-            ;
-            formData.append('photo', file);
+
+            // Create FormData for each file
+            const data = new FormData();
+            data.append('file', file);
+            data.append('upload_preset', 'kartalucia');
+            data.append('cloud_name', 'dulvlbprk');
+            data.append('resource_type', 'auto');
+
+            // Upload to Cloudinary
+            const response = await fetch(
+                'https://api.cloudinary.com/v1_1/dulvlbprk/image/upload',
+                {
+                  method: 'POST',
+                  mode: "cors",
+                  body: data,
+                  headers: {
+                    'Accept': 'application/json'
+                  }
+                }
+            );
+
+            if (!response.ok) {
+              throw new Error('Upload failed', );
+            }
+
+            const responseData = await response.json();
+            return responseData.secure_url;
           });
 
-          if(formData.has('photo')){
-          const response = await fetch('http://localhost:3001/api/admin/upload', {
-            method: 'POST',
-            body: formData
-          });
+          // Wait for all uploads to complete
+          const results = await Promise.all(uploadPromises);
+          // Filter out null values (from existing URLs) and add to uploadedUrls
+          uploadedUrls = results.filter(url => url !== null);
 
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error|| 'Upload failed');
-          }
-
-          uploadedUrls = await response.json();
-          console.dir(uploadedUrls)
           console.log('Upload successful:', uploadedUrls);
-        }
-
         } catch (error) {
           console.error('Upload failed:', error);
           throw error;
-        } finally {
-          setIsLoading(false)
         }
       }
 
@@ -224,7 +274,7 @@ const WorkAdmin = () => {
         bannerUrl,
         aboutUrl,
         title,
-        imageUrl: uploadedUrls?.successful?.length > 0 ? JSON.stringify([...uploadedUrls.successful,...filesFromCloudinary]) :JSON.stringify( [...filesFromCloudinary]), // Use existing imageUrl if no new uploads
+        imageUrl: uploadedUrls?.length > 0 ? JSON.stringify([...uploadedUrls,...filesFromCloudinary]) :JSON.stringify( [...filesFromCloudinary]), // Use existing imageUrl if no new uploads
         videoUrl,
         about:'.',
         desc,
