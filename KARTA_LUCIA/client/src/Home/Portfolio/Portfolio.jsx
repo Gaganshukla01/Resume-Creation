@@ -23,6 +23,18 @@ export default function Portfolio() {
     }
   }, [isDataFetched]);
 
+  function showImage(imageUrl) {
+        let url = imageUrl;
+        try {
+            const imageArray = JSON.parse(imageUrl);
+            if (Array.isArray(imageArray) && imageArray.length > 0) {
+                url = imageArray[0];
+            }
+        } catch (e) {
+            // imageUrl is not a stringified array, use it as is
+        }
+        return url;
+  }
   const fetchPortfolios = async () => {
     try {
       const portfoliosData = await getPortfolioByIdOrAll();
@@ -75,7 +87,7 @@ export default function Portfolio() {
           <SwiperSlide className="portfolio-slide">
             <div className="portfolio-card">
               <Link to={`/Details/${portfolio._id}`}>
-                <img src={portfolio.imageUrl} alt={portfolio.title} srcSet="" />
+                <img src={showImage(portfolio.imageUrl)} alt={portfolio.title} srcSet="" />
               </Link>
               <h3 className="portfolio-title">{portfolio.title}</h3>
             </div>
