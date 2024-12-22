@@ -9,6 +9,6 @@ router.post('/blog', AdminController.createBlog);
 router.get('/blog', AdminController.getBlog);
 router.delete('/blog/:id', AdminController.deleteBlog);
 router.put('/blog/:id', AdminController.updateBlog);
-router.post('/upload',Cloudinary.uploadImageCloud)
+router.post('/upload',Cloudinary.upload.array('photo', 12),Cloudinary.uploadImageCloud)
 
 module.exports = router;

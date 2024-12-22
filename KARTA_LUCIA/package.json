@@ -9,6 +9,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "nodemonConfig": {
+    "ignore": [
+      "tmp/*",
+      "public/*"
+    ],
+    "delay": "2500"
+  },
   "dependencies": {
     "cloudinary": "^2.5.1",
     "cors": "^2.8.5",

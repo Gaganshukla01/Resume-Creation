@@ -22,6 +22,18 @@ const Projects = () => {
       console.error("Error fetching portfolios:", error);
     }
   };
+  function showImage(imageUrl) {
+    let url = imageUrl;
+    try {
+      const imageArray = JSON.parse(imageUrl);
+      if (Array.isArray(imageArray) && imageArray.length > 0) {
+        url = imageArray[0];
+      }
+    } catch (e) {
+      // imageUrl is not a stringified array, use it as is
+    }
+    return url;
+  }
 
   return (
     <div className="projects-section">
@@ -37,7 +49,7 @@ const Projects = () => {
               <div className="projects-card-overlay">
                 <h2>{portfolio.title}</h2>
               </div>
-              <img src={portfolio.imageUrl} alt={portfolio.title} />
+              <img src={showImage(portfolio.imageUrl)} alt={portfolio.title} />
             </div>
           </Link>
         ))}
