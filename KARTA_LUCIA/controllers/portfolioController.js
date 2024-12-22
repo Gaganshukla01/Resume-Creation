@@ -6,13 +6,10 @@ const { sendSuccessResponse, sendFailureResponse } = require('../helpers/respons
 const createPortfolio = async (req, res) => {
   try {
     const {
-      bannerUrl,
-      aboutUrl,
       title,
       desc,
       imageUrl,
       videoUrl,
-      about,
       workUrl_1,
       workUrl_2,
       workUrl_3,
@@ -33,9 +30,7 @@ const createPortfolio = async (req, res) => {
       workUrl_18
     } = req.body;
 
-    const portfolio = new Portfolio({  
-      bannerUrl,
-      aboutUrl,
+    const portfolio = new Portfolio({
       title,
       desc,
       imageUrl,
@@ -125,7 +120,6 @@ const editPortfolio = async (req, res) => {
     const { portfolioId } = req.params;
 
     const { bannerUrl,
-      aboutUrl,
       title,
       desc,
       imageUrl,
@@ -154,7 +148,6 @@ const editPortfolio = async (req, res) => {
     const portfolio = await Portfolio.findByIdAndUpdate(
       portfolioId,
       { bannerUrl,
-        aboutUrl,
         title,
         desc,
         imageUrl,

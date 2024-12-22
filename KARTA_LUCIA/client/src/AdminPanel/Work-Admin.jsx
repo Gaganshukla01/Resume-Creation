@@ -20,10 +20,8 @@ const Loader = () => (
 
 
 const FilePreviewList = ({ files, onDelete }) => {
-   if(files.length <= 0  || typeof files === 'string') {
-     return <div>
-
-     </div>
+   if( !files || typeof files === 'string' ||  files.length <= 0 ) {
+     return <div></div>
    }
   return (
       <div className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md p-4 mb-4 w-[40vw] min-h-[40px]">
@@ -76,7 +74,7 @@ const WorkAdmin = () => {
   }
   function parseImages(imageUrl) {
     if(!imageUrl) return;
-    let url = imageUrl;
+    let url=[];
     try {
       const imageArray = JSON.parse(imageUrl);
       if (Array.isArray(imageArray) && imageArray.length > 0) {
@@ -228,7 +226,7 @@ const WorkAdmin = () => {
         title,
         imageUrl: uploadedUrls?.successful?.length > 0 ? JSON.stringify([...uploadedUrls.successful,...filesFromCloudinary]) :JSON.stringify( [...filesFromCloudinary]), // Use existing imageUrl if no new uploads
         videoUrl,
-        about,
+        about:'.',
         desc,
         workUrl_1: workUrl_1,
         workUrl_2: workUrl_2,
@@ -315,19 +313,6 @@ const WorkAdmin = () => {
                   />
                 </div>
 
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    Image Url:{" "}
-                  </label>
-                  <input
-                      placeholder="Image Url"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={imageUrl}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                  />
-                </div>
 
                 <div className="flex !justify-between items-center mr-5">
                   {/* Upload Button */}
