@@ -196,7 +196,7 @@ const WorkAdmin = () => {
 
           if(formData.has('photo')){
           const response = await fetch('http://localhost:3001/api/admin/upload', {
-            method: 'POST',sd
+            method: 'POST',
             body: formData
           });
 
