@@ -118,7 +118,6 @@ const WorkAdmin = () => {
         setWorkUrl_16(data.data.workUrl_16);
         setWorkUrl_17(data.data.workUrl_17);
         setWorkUrl_18(data.data.workUrl_18);
-        console.log(data, "datadata");
       } catch (error) {
         console.error("Error fetching plan details:", error);
       }
@@ -174,8 +173,8 @@ const WorkAdmin = () => {
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      if (!title.trim() || !desc.trim() || !about.trim()) {
-        setError("Title, description and about fields are required");
+      if (!title.trim()  ) {
+        setError("Title is  required");
         alert("Required fields are missing");
         return;
       }
@@ -207,7 +206,7 @@ const WorkAdmin = () => {
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Upload failed');
+            throw new Error(error|| 'Upload failed');
           }
 
           uploadedUrls = await response.json();
@@ -291,20 +290,6 @@ const WorkAdmin = () => {
             <div>
               <div className="mb-6">
                 <div className="flex !justify-between items-center mr-5">
-                  <label className="uppercase text-gray-700">
-                    Banner Video Url:
-                  </label>
-
-                  <input
-                      placeholder="Banner Video Url"
-                      className="!w-2/5 !text-center bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={bannerUrl}
-                      onChange={(e) => setBannerUrl(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex !justify-between items-center mr-5">
                   <label style={{textTransform: "uppercase"}}>Title: </label>
 
                   <input
@@ -381,33 +366,6 @@ const WorkAdmin = () => {
                   />
                 </div>
 
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    About - Text:{" "}
-                  </label>
-                  <input
-                      placeholder="About - Text"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={about}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setAbout(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    About - Video URL:{" "}
-                  </label>
-                  <input
-                      placeholder="About - Video URL"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={aboutUrl}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setAboutUrl(e.target.value)}
-                  />
-                </div>
 
                 <div className="flex !justify-between items-center mr-5">
                   <label style={{textTransform: "uppercase"}}>
