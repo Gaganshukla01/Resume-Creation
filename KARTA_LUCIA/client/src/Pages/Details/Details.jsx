@@ -90,19 +90,21 @@ const Details = () => {
   return (
     <>
       {/* Master Image */}
-      <div className="master">
+      {
+
+        (  portfolios.videoUrl )  && <div className="master">
         {/* <img src={portfolios.masterImg} alt="" srcset="" /> */}
         <ReactPlayer
-          url={portfolios.videoUrl}
-          playing={true}
-          muted={true}
-          className="goodimg"
-          width="100%"
-          height="100%"
-          controls={false}
-          loop
+            url={portfolios.videoUrl}
+            playing={true}
+            muted={true}
+            className="goodimg"
+            width="100%"
+            height="100%"
+            controls={false}
+            loop
         />
-      </div>
+      </div>}
 
       <div className="details-container">
         {/* Head */}
@@ -121,12 +123,15 @@ const Details = () => {
             typeof showImage(portfolios.imageUrl) !== 'string' ? (
                 <ImageCarousel images={showImage(portfolios.imageUrl)}/>
             ) : (
-                <img src={showImage(portfolios.imageUrl)} alt="" srcset=""/>
+                portfolios.imageUrl.length > 2  && <img src={showImage(portfolios.imageUrl)} alt="" srcset=""/>
             )
+
           }
         </div>
 
         {/* Swiper */}
+        {
+            videoUrls.length > 0 &&
         <section className="portfolio-section container relative">
           {/* Navigation buttons */}
           <button
@@ -197,6 +202,7 @@ const Details = () => {
             ))}
           </Swiper>
         </section>
+        }
 
           <ContactSection/>
       </div>

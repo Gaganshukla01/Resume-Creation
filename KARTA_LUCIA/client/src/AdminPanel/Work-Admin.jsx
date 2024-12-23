@@ -20,6 +20,9 @@ const Loader = () => (
 
 
 const FilePreviewList = ({ files, onDelete }) => {
+   if( !files || typeof files === 'string' ||  files.length <= 0 ) {
+     return <div></div>
+   }
   return (
       <div className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md p-4 mb-4 w-[40vw] min-h-[40px]">
         <div className="grid grid-cols-2 gap-4">
@@ -71,7 +74,7 @@ const WorkAdmin = () => {
   }
   function parseImages(imageUrl) {
     if(!imageUrl) return;
-    let url = imageUrl;
+    let url=[];
     try {
       const imageArray = JSON.parse(imageUrl);
       if (Array.isArray(imageArray) && imageArray.length > 0) {
@@ -113,7 +116,6 @@ const WorkAdmin = () => {
         setWorkUrl_16(data.data.workUrl_16);
         setWorkUrl_17(data.data.workUrl_17);
         setWorkUrl_18(data.data.workUrl_18);
-        console.log(data, "datadata");
       } catch (error) {
         console.error("Error fetching plan details:", error);
       }
@@ -166,55 +168,110 @@ const WorkAdmin = () => {
     setUploadedFiles(prev => prev.filter((_, index) => index !== indexToDelete));
   };
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  const MAX_FILES = 12;
+
+  const validateFiles = (files, existingFiles = []) => {
+    // Check for total number of files
+    const totalFiles = files.length + existingFiles.length;
+    if (totalFiles > MAX_FILES) {
+      alert(`Cannot upload more than ${MAX_FILES} images. Currently selected: ${totalFiles}`);
+      return false;
+    }
+
+    // Check each new file
+    for (const file of files) {
+      // Skip if it's a string (existing URL)
+      if (typeof file === 'string') continue;
+
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`File "${file.name}" exceeds 10MB size limit`);
+        return false;
+      }
+
+      // Check if it's an image
+      if (!file.type.startsWith('image/')) {
+        alert(`File "${file.name}" is not an image`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      if (!title.trim() || !desc.trim() || !about.trim()) {
-        setError("Title, description and about fields are required");
+      if (!title.trim() ) {
         alert("Required fields are missing");
+        setIsLoading(false)
+        return;
+      }
+      // Validate files before processing
+      if (!validateFiles(uploadedFiles)) {
+        setIsLoading(false);
         return;
       }
 
       // Upload files first
+      // Handle file uploads to Cloudinary
       let uploadedUrls = [];
-      const filesFromCloudinary = []
+      const filesFromCloudinary = [];
+
       if (uploadedFiles.length > 0) {
         try {
-          const formData = new FormData();
-
-          // Append each file with the field name 'photo'
-          console.log(uploadedFiles)
-
-          uploadedFiles.forEach(file => {
+          // Process each file for upload
+          const uploadPromises = uploadedFiles.map(async (file) => {
+            // If the file is already a URL (previously uploaded), keep it
             if (typeof file === 'string') {
-              filesFromCloudinary.push(file)
-              return
+              filesFromCloudinary.push(file);
+              return null;
             }
-            ;
-            formData.append('photo', file);
+
+            // Create FormData for each file
+            const data = new FormData();
+            data.append('file', file);
+            data.append('upload_preset', 'kartalucia');
+            data.append('cloud_name', 'dulvlbprk');
+            data.append('resource_type', 'auto');
+
+            // Upload to Cloudinary
+            const response = await fetch(
+                'https://api.cloudinary.com/v1_1/dulvlbprk/image/upload',
+                {
+                  method: 'POST',
+                  mode: "cors",
+                  body: data,
+                  headers: {
+                    'Accept': 'application/json'
+                  }
+                }
+            );
+
+            if (!response.ok) {
+              alert('Upload failed', );
+              setIsLoading(false);
+              return;
+            }
+
+            const responseData = await response.json();
+            return responseData.secure_url;
           });
 
-          if(formData.has('photo')){
-          const response = await fetch('http://localhost:3001/api/admin/upload', {
-            method: 'POST',
-            body: formData
-          });
+          // Wait for all uploads to complete
+          const results = await Promise.all(uploadPromises);
+          // Filter out null values (from existing URLs) and add to uploadedUrls
+          uploadedUrls = results.filter(url => url !== null);
 
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error|| 'Upload failed');
-          }
-
-          uploadedUrls = await response.json();
-          console.dir(uploadedUrls)
           console.log('Upload successful:', uploadedUrls);
-        }
-
+          setIsLoading(false);
         } catch (error) {
+          alert('Upload Failed', error.message)
+          setIsLoading(false);
           console.error('Upload failed:', error);
-          throw error;
-        } finally {
-          setIsLoading(false)
+          return
         }
       }
 
@@ -222,9 +279,9 @@ const WorkAdmin = () => {
         bannerUrl,
         aboutUrl,
         title,
-        imageUrl: uploadedUrls?.successful?.length > 0 ? JSON.stringify([...uploadedUrls.successful,...filesFromCloudinary]) :JSON.stringify( [...filesFromCloudinary]), // Use existing imageUrl if no new uploads
+        imageUrl: uploadedUrls?.length > 0 ? JSON.stringify([...uploadedUrls,...filesFromCloudinary]) :JSON.stringify( [...filesFromCloudinary]), // Use existing imageUrl if no new uploads
         videoUrl,
-        about,
+        about:'.',
         desc,
         workUrl_1: workUrl_1,
         workUrl_2: workUrl_2,
@@ -258,7 +315,9 @@ const WorkAdmin = () => {
 
     } catch (error) {
       console.error("Error:", error);
-      alert("Error uploading files or saving portfolio");
+      alert("Error in saving portfolio" , error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -286,20 +345,6 @@ const WorkAdmin = () => {
             <div>
               <div className="mb-6">
                 <div className="flex !justify-between items-center mr-5">
-                  <label className="uppercase text-gray-700">
-                    Banner Video Url:
-                  </label>
-
-                  <input
-                      placeholder="Banner Video Url"
-                      className="!w-2/5 !text-center bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={bannerUrl}
-                      onChange={(e) => setBannerUrl(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex !justify-between items-center mr-5">
                   <label style={{textTransform: "uppercase"}}>Title: </label>
 
                   <input
@@ -325,19 +370,6 @@ const WorkAdmin = () => {
                   />
                 </div>
 
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    Image Url:{" "}
-                  </label>
-                  <input
-                      placeholder="Image Url"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={imageUrl}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                  />
-                </div>
 
                 <div className="flex !justify-between items-center mr-5">
                   {/* Upload Button */}
@@ -376,33 +408,6 @@ const WorkAdmin = () => {
                   />
                 </div>
 
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    About - Text:{" "}
-                  </label>
-                  <input
-                      placeholder="About - Text"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={about}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setAbout(e.target.value)}
-                  />
-                </div>
-
-                <div className="flex !justify-between items-center mr-5">
-                  <label style={{textTransform: "uppercase"}}>
-                    About - Video URL:{" "}
-                  </label>
-                  <input
-                      placeholder="About - Video URL"
-                      className="bg-gray-300 text-gray-700 border border-gray-400 rounded-md py-2 px-4 mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-                      type="text"
-                      value={aboutUrl}
-                      style={{width: "40vw", textAlign: "center"}}
-                      onChange={(e) => setAboutUrl(e.target.value)}
-                  />
-                </div>
 
                 <div className="flex !justify-between items-center mr-5">
                   <label style={{textTransform: "uppercase"}}>
