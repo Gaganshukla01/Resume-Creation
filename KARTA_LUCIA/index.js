@@ -11,7 +11,6 @@ const path = require("path");
 // const fileUpload=require("express-fileupload")
 require("dotenv").config();
 
-
 const app = express();
 const port = 3001;
 

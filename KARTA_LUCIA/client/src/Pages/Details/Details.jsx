@@ -3,7 +3,8 @@ import ContactSection from "../../Home/Contact/Contact";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Link, useParams } from "react-router-dom";
-import {
+import 
+{
   getPortfolioById,
   getPortfolioByListNameLogo,
   // createContact,
@@ -17,8 +18,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import ReactPlayer from "react-player";
 import "./Details.css";
-
-// import Master from "../../Assets/Details/Master.jpg";
 
 // import required modules
 import { Autoplay, FreeMode } from "swiper/modules";

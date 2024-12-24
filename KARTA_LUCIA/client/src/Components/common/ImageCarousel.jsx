@@ -22,7 +22,7 @@ const ImageCarousel = ({ images }) => {
         if (screenWidth >= 768) return 1;
         return 1;
     };
-
+    
     return (
         <section className="portfolio-section container relative">
             {/* Navigation buttons - only show for multiple images */}

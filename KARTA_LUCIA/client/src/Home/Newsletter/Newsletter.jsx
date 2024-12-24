@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import "./Newsletter.css";
 import { createContact } from "../../services/portfolioService";
 
@@ -28,7 +28,7 @@ const Newsletter = () => {
 
   return (
     <div>
-      <div className="Newsletter">
+      <div className="Newsletter" >
         <div className="flex">
           <h1>Subscribe To Our Newsletter</h1>
         </div>

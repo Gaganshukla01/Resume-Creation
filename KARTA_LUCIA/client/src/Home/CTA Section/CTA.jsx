@@ -1,15 +1,16 @@
-import React from "react";
+import {React,useRef} from "react";
 
 import { Link } from "react-router-dom";
 import { HiOutlineArrowUpRight } from "react-icons/hi2";
 import './CTA.css'
 const CTA = () => {
+  
   return (
     <div className="cta-section container">
     <div className="contact-info">
         <div className="contact-item">
           <h3 className="contact-title">
-            <Link to='/Projects'
+            <Link to='./Projects'
               className="contact-link"
             >
               Our Projects{" "}
@@ -27,7 +28,7 @@ const CTA = () => {
         </div>
         <div className="contact-item">
           <h3 className="contact-title">
-            <div className="contact-link">
+            <div className="contact-link" onClick={() => window.scrollTo({ top: 2500, behavior: "smooth" })}>
               Contact Us{" "}
               <span className="arrow">
                 <HiOutlineArrowUpRight />
@@ -44,7 +45,7 @@ const CTA = () => {
 
         <div className="contact-item">
           <h3 className="contact-title">
-            <div className="contact-link">
+            <div className="contact-link" onClick={() => window.scrollTo({ top: 3000, behavior: "smooth" })}>
               Blogs{" "}
               <span className="arrow">
                 <HiOutlineArrowUpRight />

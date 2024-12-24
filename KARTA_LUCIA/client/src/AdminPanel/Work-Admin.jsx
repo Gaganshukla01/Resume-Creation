@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import FileUploadModal from '../Components/modals/FileUploadModal'
 import { X } from 'lucide-react';
-import Constants from '../utilities/constants'; // Importing your Constants file
+import Constants from '../utilities/constants'; 
 
 const Loader = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
